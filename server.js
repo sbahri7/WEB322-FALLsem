@@ -1,4 +1,3 @@
-
 /********************************************************************************
 * WEB322 – Assignment 01
 *
@@ -7,16 +6,27 @@
 *
 * https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
 *
-* Name: _satyam bahri_____________________ Student ID: 172151227______________ Date: 09/30/2025______________
+* Name: satyam bahri       Student ID: 172151227       Date: 09/30/2025
 *
 ********************************************************************************/
 const express = require("express");
 const projects = require("./modules/projects");
+const path = require("path");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.set('views', __dirname + '/views');
-app.use(express.static(__dirname + '/public'));
 
+// Views and static files setup
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Root route to avoid 404 on "/"
+app.get("/", (req, res) => {
+  res.send("Welcome to the WEB322 Assignment 1 API!");
+});
+
+// Serve a favicon to avoid frequent favicon 404 errors
+app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 projects.initialize().then(() => {
   app.get("/solutions/projects", (req, res) => {
