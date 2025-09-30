@@ -1,4 +1,4 @@
-Add the following declaration at the top of your server.js file:
+
 /********************************************************************************
 * WEB322 – Assignment 01
 *
