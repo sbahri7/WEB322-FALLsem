@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= project.name %> | Project Details</title>
+  <link href="/css/main.css" rel="stylesheet" />
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("https://dummyjson.com/quotes/random")
+        .then(res => res.json())
+        .then(data => {
+          const quoteEl = document.getElementById("quote");
+          quoteEl.textContent = `"${data.quote}" - ${data.author}`;
+        })
+        .catch(err => {
+          console.error("Error fetching quote:", err);
+        });
+    });
+  </script>
+</head>
+<body class="bg-gray-50 p-6">
+  
+
+  <header class="mb-6 text-center">
+    <h1 class="text-4xl font-extrabold mb-4"><%= project.name %></h1>
+    <p class="text-lg text-gray-700">
+      Below, you will find detailed information about the project: <%= project.name %>.
+    </p>
+  </header>
+
+  <main class="max-w-5xl mx-auto bg-white p-6 rounded shadow">
+    <img src="<%= project.feature_img_url || 'https://via.placeholder.com/600x300' %>" alt="Project Image" class="mb-6 w-full h-auto rounded" />
+    
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Introduction</h2>
+      <p><%= project.intro_short || "No introduction available." %></p>
+    </section>
+
+    <section class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Impact</h2>
+      <p><%= project.impact || "No impact information available." %></p>
+    </section>
+
+    <section class="mb-6">
+      <a href="<%= project.original_source_url || '#' %>" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        Find More Information
+      </a>
+    </section>
+
+    <section class="mt-8 bg-gray-100 p-4 rounded">
+      <h3 class="text-xl font-semibold mb-2">Random Quote</h3>
+      <p id="quote" class="italic text-gray-700">Loading quote...</p>
+    </section>
+
+    <div class="mt-8">
+      <a href="#" onclick="history.back(); return false;" class="btn btn-secondary">Back</a>
+    </div>
+  </main>
+</body>
+</html>

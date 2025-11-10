@@ -10,50 +10,76 @@
 *
 ********************************************************************************/
 const express = require("express");
-const projects = require("./modules/projects");
 const path = require("path");
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Views and static files setup
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+// Set EJS as the view engine
+app.set("view engine", "ejs");
+app.set('views', path.join(__dirname, 'public', 'views'));
 
-// Root route to avoid 404 on "/"
+
+// Sample projects data
+const projects = [
+  { id: 1, name: "Solar Energy Project", sector: "Energy", description: "Solar power installation.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Clean solar power initiative.", impact: "Reduces carbon emissions by 30%.", original_source_url: "https://example.com/solar" },
+  { id: 2, name: "Water Conservation", sector: "Water", description: "Rainwater harvesting system.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Captures rainwater for irrigation.", impact: "Reduces water waste by 50%.", original_source_url: "https://example.com/water" },
+  { id: 3, name: "Industrial Recycling", sector: "Industry", description: "Waste recycling for factories.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Recycling initiative for factories.", impact: "Decreases landfill waste by 40%.", original_source_url: "https://example.com/recycling" }
+];
+
+// Serve static files (css, js, images)
+app.use(express.static(path.join(__dirname, "public")));
+
+// Home page route
 app.get("/", (req, res) => {
-  res.send("Welcome to the WEB322 Assignment 1 API!");
+  res.render("home", { page: "/" });
 });
 
-// Serve a favicon to avoid frequent favicon 404 errors
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+// About page route
+app.get("/about", (req, res) => {
+  res.render("about", { page: "/about" });
+});
 
-projects.initialize().then(() => {
-  app.get("/solutions/projects", (req, res) => {
-    projects.getAllProjects()
-      .then(data => res.json(data))
-      .catch(err => res.status(500).send(err));
-  });
-
-  app.get("/solutions/projects/id-demo", async (req, res) => {
-    try {
-      const project = await projects.getProjectById(1);
-      res.json(project);
-    } catch (error) {
-      res.status(404).send(error);
+// Projects list route with optional sector filter
+app.get("/solutions/projects", (req, res) => {
+  try {
+    const sector = req.query.sector;
+    if (sector) {
+      const filteredProjects = projects.filter(p => p.sector.toLowerCase() === sector.toLowerCase());
+      if (filteredProjects.length === 0) {
+        return res.status(404).render("404", { message: `No projects found for sector: ${sector}`, page: "" });
+      }
+      return res.render("projects", { projects: filteredProjects, page: "/solutions/projects" });
     }
-  });
+res.render("projects", { projects: yourProjectsArray, page: "/solutions/projects" });
 
-  app.get("/solutions/projects/sector-demo", async (req, res) => {
-    try {
-      const projectsBySector = await projects.getProjectsBySector("Energy");
-      res.json(projectsBySector);
-    } catch (error) {
-      res.status(404).send(error);
+  } catch (err) {
+    res.status(500).render("404", { message: err.message, page: "" });
+  }
+});
+
+// Single project by ID route
+app.get("/solutions/projects/:id", (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(404).render("404", { message: "Invalid project id", page: "" });
     }
-  });
+    const project = projects.find(p => p.id === id);
+    if (!project) {
+      return res.status(404).render("404", { message: `No project found with id: ${id}`, page: "" });
+    }
+    res.render("project", { project, page: "" });
+  } catch (err) {
+    res.status(500).render("404", { message: err.message, page: "" });
+  }
+});
 
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}).catch((error) => {
-  console.error("Initialization failed", error);
+// Custom 404 handler
+app.use((req, res) => {
+  res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for", page: "" });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

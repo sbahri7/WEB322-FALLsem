@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assignment Landing</title>
+  <link href="/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50 p-6">
+  <%- include('partials/navbar', { page: page }) %>
+
+  <nav class="flex justify-between p-4 bg-white shadow mb-8">
+    <a href="/" class="font-bold text-xl text-indigo-600">Assignment Project</a>
+    <div>
+      <a href="/solutions/projects" class="mr-4 text-indigo-500 hover:underline">Projects API</a>
+      <a href="/about" class="text-indigo-500 hover:underline">About</a>
+    </div>
+  </nav>
+  <header class="text-center max-w-3xl mx-auto">
+    <h1 class="text-5xl font-extrabold mb-6 text-indigo-700">Welcome to My Web322 Assignment</h1>
+    <p class="text-lg text-gray-700">Explore climate change projects and learn about sustainability efforts.</p>
+  </header>
+</body>
+</html>

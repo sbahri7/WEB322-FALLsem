@@ -11,6 +11,7 @@ function initialize() {
         const sector = sectorData.find(
           (sector) => sector.id === project.sectorid
         );
+        
         const projectWithSector = {
           ...project,
           sector: sector ? sector.sectorname : "Unknown",

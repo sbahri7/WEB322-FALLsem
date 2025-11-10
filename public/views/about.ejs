@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>About Me</title>
+  <link href="/css/main.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50 p-6">
+  <%- include('partials/navbar', { page: page }) %>
+
+  <nav class="flex justify-between p-4 bg-white shadow mb-8">
+    <a href="/" class="font-bold text-xl text-indigo-600">Assignment Project</a>
+    <div>
+      <a href="/" class="mr-4 text-indigo-500 hover:underline">Home</a>
+      <a href="/solutions/projects" class="text-indigo-500 hover:underline">Projects API</a>
+    </div>
+  </nav>
+  <main class="max-w-3xl mx-auto bg-white p-8 rounded shadow">
+    <h2 class="text-3xl font-bold mb-4">About Me</h2>
+    <p>Hello, I am a WEB322 student working on assignments related to climate change projects.</p>
+  </main>
+</body>
+</html>
