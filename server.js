@@ -62,22 +62,21 @@ res.render("projects", { projects: yourProjectsArray, page: "/solutions/projects
 });
 
 // Single project by ID route
-app.get("/solutions/projects", (req, res) => {
-  // Optionally filter by sector from query params
-  const sector = req.query.sector;
-  let projects = projectData;
-
-  if (sector) {
-    projects = projects.filter(p => p.sector.toLowerCase() === sector.toLowerCase());
+app.get("/solutions/projects/:id", (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return res.status(404).render("404", { message: "Invalid project id", page: "" });
+    }
+    const project = projects.find(p => p.id === id);
+    if (!project) {
+      return res.status(404).render("404", { message: `No project found with id: ${id}`, page: "" });
+    }
+    res.render("project", { project, page: "" });
+  } catch (err) {
+    res.status(500).render("404", { message: err.message, page: "" });
   }
-
-  if (projects.length === 0) {
-    return res.status(404).render("404", { message: `No projects found for sector: ${sector}`, page: "" });
-  }
-
-  res.render("projects", { projects, sectors: sectorData, page: "/solutions/projects" });
 });
-
 
 // Custom 404 handler
 app.use((req, res) => {
