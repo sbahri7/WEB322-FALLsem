@@ -9,12 +9,9 @@
 * Name: satyam bahri       Student ID: 172151227       Date: 09/30/2025
 *
 ********************************************************************************/
-const path = require("path");
-const projectData = require(path.join(__dirname, "data", "projectdata.json"));
-const sectorData = require(path.join(__dirname, "data", "sectordata.json"));
 
 const express = require("express");
-
+const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
