@@ -9,25 +9,20 @@
 * Name: satyam bahri       Student ID: 172151227       Date: 09/30/2025
 *
 ********************************************************************************/
-
-const express = require("express");
 const path = require("path");
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set EJS as the view engine
+// Load data from JSON
+const projectData = require(path.join(__dirname, "data", "projectdata.json"));
+const sectorData = require(path.join(__dirname, "data", "sectordata.json"));
+
+// Use EJS and set views directory (your views are in public/views)
 app.set("view engine", "ejs");
-app.set('views', path.join(__dirname, 'public', 'views'));
+app.set("views", path.join(__dirname, "public", "views"));
 
-
-// Sample projects data
-const projects = [
-  { id: 1, name: "Solar Energy Project", sector: "Energy", description: "Solar power installation.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Clean solar power initiative.", impact: "Reduces carbon emissions by 30%.", original_source_url: "https://example.com/solar" },
-  { id: 2, name: "Water Conservation", sector: "Water", description: "Rainwater harvesting system.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Captures rainwater for irrigation.", impact: "Reduces water waste by 50%.", original_source_url: "https://example.com/water" },
-  { id: 3, name: "Industrial Recycling", sector: "Industry", description: "Waste recycling for factories.", feature_img_url: "https://via.placeholder.com/600x300", intro_short: "Recycling initiative for factories.", impact: "Decreases landfill waste by 40%.", original_source_url: "https://example.com/recycling" }
-];
-
-// Serve static files (css, js, images)
+// Serve static files from /public
 app.use(express.static(path.join(__dirname, "public")));
 
 // Home page route
@@ -40,42 +35,36 @@ app.get("/about", (req, res) => {
   res.render("about", { page: "/about" });
 });
 
-// Projects list route with optional sector filter
+// Projects list route (use all data and pass sectorData)
 app.get("/solutions/projects", (req, res) => {
-  try {
-    const sector = req.query.sector;
-    if (sector) {
-      const filteredProjects = projects.filter(p => p.sector.toLowerCase() === sector.toLowerCase());
-      if (filteredProjects.length === 0) {
-        return res.status(404).render("404", { message: `No projects found for sector: ${sector}`, page: "" });
-      }
-      return res.render("projects", { projects: filteredProjects, page: "/solutions/projects" });
-    }
-res.render("projects", { projects: yourProjectsArray, page: "/solutions/projects" });
+  const sector = req.query.sector;
+  let projects = projectData;
 
-  } catch (err) {
-    res.status(500).render("404", { message: err.message, page: "" });
+  if (sector) {
+    projects = projects.filter(p => p.sector && p.sector.toLowerCase() === sector.toLowerCase());
   }
+
+  if (!projects || projects.length === 0) {
+    return res.status(404).render("404", { message: `No projects found for sector: ${sector || "any"}` });
+  }
+
+  res.render("projects", { projects, sectors: sectorData, page: "/solutions/projects" });
 });
 
-// Single project by ID route
+// Project by ID route
 app.get("/solutions/projects/:id", (req, res) => {
-  try {
-    const id = parseInt(req.params.id, 10);
-    if (isNaN(id)) {
-      return res.status(404).render("404", { message: "Invalid project id", page: "" });
-    }
-    const project = projects.find(p => p.id === id);
-    if (!project) {
-      return res.status(404).render("404", { message: `No project found with id: ${id}`, page: "" });
-    }
-    res.render("project", { project, page: "" });
-  } catch (err) {
-    res.status(500).render("404", { message: err.message, page: "" });
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) {
+    return res.status(404).render("404", { message: "Invalid project ID", page: "" });
   }
+  const project = projectData.find(p => Number(p.id) === id);
+  if (!project) {
+    return res.status(404).render("404", { message: `No project found with id: ${id}`, page: "" });
+  }
+  res.render("project", { project, page: "" });
 });
 
-// Custom 404 handler
+// 404 catch-all
 app.use((req, res) => {
   res.status(404).render("404", { message: "I'm sorry, we're unable to find what you're looking for", page: "" });
 });
